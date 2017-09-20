@@ -82,7 +82,150 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{First page}
+\begin{frame}{Overview}
+\vspace{0.25 cm}
+\begin{block}{Strategy}
+Everything that I'm working on is intended to increase the ``separation of concerns'' between physics/statistical analysis and computing issues, so that data analysts can focus on data.
+\end{block}
+
+\begin{uncoverenv}<2->
+\begin{block}{Tactics}
+The idea of adding abstraction layers is not new, but physicists don't often use them because they're unfamiliar, slow, or poorly advertised. Therefore, as a means to the above, I'm
+\begin{enumerate}
+\item<3-> developing projects in stages so that small improvements can be rolled out before radical changes;
+\item<4-> ensuring high performance so that speed can be the first selling point;
+\item<5-> \textcolor{gray}{lagging behind in advertising my products, partly because something has to be compelling enough and usable enough to make a case, and that's a high threshold.}
+\end{enumerate}
+\end{block}
+\end{uncoverenv}
 \end{frame}
+
+\begin{frame}{Overview}
+\vspace{0.25 cm}
+\textcolor{darkblue}{2016 projects}
+\begin{itemize}
+\item {\bf Data into Spark} for CMS Big Data Project
+\begin{itemize}
+\item became roo4j/spark-root, completed by Viktor
+\item 2017 summer student: Pratyush Das contributed
+\end{itemize}
+
+\item {\bf Histogrammar:} functional histograms
+\begin{itemize}
+\item primary way to do HEP-style plotting in Spark
+\item I intend to repurpose it for querying HEP data (below)
+\end{itemize}
+\end{itemize}
+
+\textcolor{darkblue}{2017 projects}
+\begin{itemize}
+\item {\bf Computing on columnar data} to rapidly query HEP data
+\begin{itemize}
+\item collaboration with Tanu Malik on database indexing of hierarchical, columnar data
+\end{itemize}
+
+\item {\bf Distributed query server} for HEP analysis
+\begin{itemize}
+\item collaboration on LDRD with Oli and Igor
+\item 2017 summer student: Thanat Jatuphattharachat investigated
+\end{itemize}
+
+\item {\bf Contributions to ROOT and NanoAOD:} Numpy interface, performance tests, reading NanoAOD outside of C++, uproot
+\end{itemize}
+
+\textcolor{darkblue}{2018 and beyond}
+\begin{itemize}
+\item {\bf Femtocode:} query language for HEP data (deferred)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Computing on columnar data}
+\vspace{0.5 cm}
+We've been splitting hierarchical data into columns {\it for storage} for many years now. The new idea is to do calculations directly on columnar arrays, without reconstructing events and particles first.
+
+\vspace{0.35 cm}
+\begin{columns}[b]
+\column{0.5\linewidth}
+\scriptsize
+\begin{minted}{python}
+# objects in Python code
+def dimuon(event):
+  n = len(event.muons)
+  for i in range(n):
+    for j in range(i+1, n):
+      m1 = event.muons[i]
+      m2 = event.muons[j]
+      mass = sqrt(
+        2*m1.pt*m2.pt*(
+        cosh(m1.eta - m2.eta) -
+        cos(m1.phi - m2.phi)))
+      fill_histogram(mass)
+
+# translated to array references
+plur.compile.run(arrays, dimuon)
+\end{minted}
+
+\column{0.5\linewidth}
+\only<1>{\includegraphics[width=\linewidth]{root-and-plur.pdf}}
+\only<2>{\includegraphics[width=\linewidth]{physical-media.pdf}}
+\end{columns}
+
+\vspace{0.35 cm}
+Submitted to \href{http://cci.drexel.edu/bigdata/bigdata2017/index.html}{\textcolor{blue}{IEEE Big Data}}; subject of my \href{https://thestrangeloop.com/2017/particle-physics-10-000-times-faster.html}{\textcolor{blue}{StrangeLoop talk}}.
+\end{frame}
+
+\begin{frame}{Database indexing}
+\vspace{0.5 cm}
+\begin{columns}[c]
+\column{0.6\linewidth}
+Collaboration with \href{http://www.cdm.depaul.edu/about/Pages/People/facultyinfo.aspx?fid=1328}{\textcolor{blue}{Tanu Malik}}, database expert at DePaul.
+
+\vspace{0.2 cm}
+In particular, she's interested in the idea of applying database-style indexes to {\it hierarchical} (non-tabular) data.
+
+\column{0.3\linewidth}
+\includegraphics[width=\linewidth]{tanu.jpg}
+\end{columns}
+
+\vspace{0.2 cm}
+{\bf Some ideas:}
+Sorting events to concentrate high-$p_T$ in fewer disk pages, approximate indexing with zonemaps and bitmaps.
+
+\vspace{0.35 cm}
+\begin{minipage}{\linewidth}
+{\bf Prior art:}
+
+\scriptsize
+Toni Mattis, Johannes Henning, Patrick Rein, Robert Hirschfeld, and Malte Appeltauer. 2015. {\it Columnar objects: improving the performance of analytical applications.} DOI: \href{http://dx.doi.org/10.1145/2814228.2814230}{\textcolor{blue}{http://dx.doi.org/10.1145/2814228.2814230}}
+\end{minipage}
+
+\vspace{0.1 cm}
+But--- no code transformation (where I see the biggest gain) or database-style indexing.
+
+\vspace{0.35 cm}
+Also writing a \href{https://docs.google.com/document/d/1-ZrnsS3IZdH91_pb99OLGd4gxaMm3m3Vr7XBigpx8DE/edit?usp=sharing}{\textcolor{blue}{community whitepaper}} together.
+\end{frame}
+
+\begin{frame}{Goals for columnar computing}
+\vspace{0.2 cm}
+\begin{block}{Short term}
+Develop a suite of tools for physicists to run Python functions on their local, skimmed data faster than conventional C++ methods ({\tt\small SetBranchAddress/GetEntry}).
+\begin{itemize}
+\item ROOT with Brian's BulkIO through my Numpy interface.
+\item Numpy arrays in SSD cache with database-style indexes.
+\item \href{https://github.com/diana-hep/plur}{\textcolor{blue}{Transform Python code with PLUR}}, compile with Numba.
+\item BulkIO/PLUR-friendly data tiers like CMS's NanoAOD.
+\end{itemize}
+\end{block}
+
+\begin{block}{Long term}
+Demonstrator of a HEP query service: physicists submit Python code to a server, it runs on many nodes in parallel and returns small objects (histograms). Should be $\mathcal{O}({\mbox{1 second}})$ to be a reasonable competitor to local skims.
+\begin{itemize}
+\item working with Oli and Igor, incorporating ideas from Thanat's summer study, still looking for ways to minimize new code\ldots
+\end{itemize}
+\end{block}
+\end{frame}
+
+
 
 \end{document}
