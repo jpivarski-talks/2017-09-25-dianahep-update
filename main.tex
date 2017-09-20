@@ -60,7 +60,7 @@
   morestring=[b]"""
 }
 
-\title[2017-09-25-dianahep-update]{Jim Pivarski's Update}
+\title[2017-09-25-dianahep-update]{Jim Pivarski's update}
 \author{Jim Pivarski}
 \institute{Princeton University -- DIANA}
 \date{September 25, 2017}
@@ -218,7 +218,7 @@ We're also writing a \href{https://docs.google.com/document/d/1-ZrnsS3IZdH91_pb9
 
 \begin{frame}{Goals for columnar computing}
 \vspace{0.2 cm}
-\begin{block}{Short term}
+\begin{block}{Short term ($\sim$few months)}
 Develop a suite of tools for physicists to run Python functions on their local, skimmed data faster than conventional C++ methods ({\tt\small SetBranchAddress/GetEntry}).
 \begin{itemize}
 \item ROOT with Brian's BulkIO through my Numpy interface.
@@ -230,7 +230,7 @@ Develop a suite of tools for physicists to run Python functions on their local, 
 
 \vspace{-0.2 cm}
 \begin{uncoverenv}<2->
-\begin{block}{Long term}
+\begin{block}{Long term ($\sim$1 year)}
 Demonstrator of a HEP query service: physicists submit Python code to a server, it runs on many nodes in parallel and returns small objects (histograms). Should be $\mathcal{O}({\mbox{1 second}})$ to be a reasonable competitor to local skims.
 \begin{itemize}
 \item working with Oli and Igor, incorporating ideas from Thanat's summer study, still looking for ways to minimize new code\ldots
@@ -239,6 +239,56 @@ Demonstrator of a HEP query service: physicists submit Python code to a server, 
 \end{uncoverenv}
 \end{frame}
 
+\begin{frame}{Contributions to ROOT and CMS}
+\vspace{0.5 cm}
+\textcolor{darkblue}{ROOT: Numpy interface on top of BulkIO}
+\begin{itemize}
+\item Gets data into Scientific Python libraries (Pandas, machine learning) more rapidly, not just PLUR.
+\item Full integration with PyROOT (done).
+\item High-level connectors to common Python libraries (planned).
+\end{itemize}
 
+\vspace{0.5 cm}
+\begin{uncoverenv}<2->
+\textcolor{darkblue}{CMS: Testing CMS NanoAOD}
+\begin{itemize}
+\item To ensure it's BulkIO-capable and PLUR-capable.
+\item As a realistic case for BulkIO performance, compression (LZ4) performance, and experimental features like Brian's offset removal.
+\item It would be great if there was a similar movement in ATLAS; the DxAODs are all {\tt\small std::vectors} (destructively serialized, yet with the same semantic information as {\tt\small TLeaf[N]}).
+\end{itemize}
+\end{uncoverenv}
+\end{frame}
+
+\begin{frame}{Alternative ROOT reader}
+\vspace{0.5 cm}
+The BulkIO-Numpy interface is simple enough (no streamers or classes) that it can be performed in pure Python, with no ROOT dependency.
+
+\begin{center}
+\href{https://github.com/scikit-hep/uproot}{\textcolor{blue}{https://github.com/scikit-hep/uproot}}
+
+\includegraphics[width=0.9\linewidth]{uproot.png}
+\end{center}
+
+\begin{minipage}{\linewidth}
+\small
+\begin{itemize}
+\item View whole ROOT file as a memory-mapped array for rapid seeking.
+\item Find bytes corresponding to basket data and cast as arrays.
+\item Similar performance to BulkIO, but much easier to install.
+\item Small scope: just reading simple leaves, mirroring ROOT-Numpy.
+\end{itemize}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Conclusions}
+\vspace{0.5 cm}
+I'm working on many different projects, with many different people, but these projects are all connected: we're developing high-level analysis tools with a performance {\it gain}, not a cost.
+
+\vspace{0.5 cm}
+\uncover<2->{Staged approach: first developing tools for analysts to use on their existing skims, then providing the same interface in a distributed service, then vectorization/type-checking gains from Femtocode.}
+
+\vspace{0.5 cm}
+\uncover<3->{Combination of uproot (for BulkIO-Numpy style interface), PLUR, and Histogrammar should be physicist-ready in weeks. Then respond to feedback and iterate.}
+\end{frame}
 
 \end{document}
