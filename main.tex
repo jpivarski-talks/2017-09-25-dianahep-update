@@ -84,23 +84,23 @@
 
 \begin{frame}{Overview}
 \vspace{0.25 cm}
-\begin{block}{Strategy}
+\begin{block}{\hspace{4 cm} \underline{Strategy}}
 Everything that I'm working on is intended to increase the ``separation of concerns'' between physics/statistical analysis and computing issues, so that data analysts can focus on data.
 \end{block}
 
 \begin{uncoverenv}<2->
-\begin{block}{Tactics}
+\begin{block}{\hspace{4 cm} \underline{Tactics}}
 The idea of adding abstraction layers is not new, but physicists don't often use them because they're unfamiliar, slow, or poorly advertised. Therefore, \underline{as a means to the above}, I'm\ldots
 \begin{enumerate}
 \item<3-> developing projects in stages so that small improvements can be rolled out before radically new interfaces;
-\item<4-> ensuring high performance so that speed can be the first selling point for physicists to use these products;
-\item<5-> \textcolor{gray}{lagging behind in advertising my products, partly because something has to be compelling enough and usable enough to make a case for users to use it.}
+\item<4-> ensuring high performance so that speed can be the first selling point to attract physicists to use these products;
+\item<5-> \textcolor{gray}{lagging behind in advertising my products, largely because the software itself is not ready yet. But soon!}
 \end{enumerate}
 \end{block}
 \end{uncoverenv}
 \end{frame}
 
-\begin{frame}{Overview}
+\begin{frame}{Overview as a timeline}
 \vspace{0.25 cm}
 \textcolor{darkblue}{2016 projects}
 \begin{itemize}
@@ -167,14 +167,41 @@ plur.compile.run(arrays, dimuon)
 \end{minted}
 
 \column{0.5\linewidth}
-\only<2>{\includegraphics[width=\linewidth]{root-and-plur.pdf}}
-\only<3->{\includegraphics[width=\linewidth]{physical-media.pdf}}
+\only<2->{\includegraphics[width=\linewidth]{root-and-plur.pdf}}
+%% \only<3->{\includegraphics[width=\linewidth]{physical-media.pdf}}
 \end{columns}
 \end{uncoverenv}
 
 \vspace{0.35 cm}
-\begin{uncoverenv}<4->
+\begin{uncoverenv}<3->
 Submitted to \href{http://cci.drexel.edu/bigdata/bigdata2017/index.html}{\textcolor{blue}{IEEE Big Data}}; subject of my \href{https://thestrangeloop.com/2017/particle-physics-10-000-times-faster.html}{\textcolor{blue}{StrangeLoop talk}}.
+\end{uncoverenv}
+\end{frame}
+
+\begin{frame}[fragile]{Sharing data among versions}
+\vspace{0.5 cm}
+With an open API for {\it managing} data with columnar granularity (\href{https://github.com/diana-hep/plur}{\textcolor{blue}{see PLUR project}}), new versions of data structures can be produced without modifying or copying the original data.
+
+\vspace{0.5 cm}
+\begin{uncoverenv}<2->
+For instance, a flat list of events
+
+{\scriptsize\begin{verbatim}
+      [Event, Event, Event,         Event, Event, Event, Event]
+\end{verbatim}}
+
+can be turned into a nested list of lumi blocks that partition events
+
+{\scriptsize\begin{verbatim}
+[Lumi([Event, Event, Event]), Lumi([Event, Event, Event, Event])]
+\end{verbatim}}
+
+by adding arrays for lumi block list structure and per-lumi block attributes, and {\it reinterpreting} the original, unmodified event data.
+\end{uncoverenv}
+
+\vspace{0.5 cm}
+\begin{uncoverenv}<3->
+\fbox{\begin{minipage}{\linewidth}Users can correct jet energies, add reconstructed candidates, link gen and reco, filter particles or events, etc., all without modifying or copying--- so that dataset versions can share content like git.a \end{minipage}}
 \end{uncoverenv}
 \end{frame}
 
@@ -194,37 +221,37 @@ In particular, she's interested in the idea of applying database-style indexes t
 \vspace{0.2 cm}
 \begin{uncoverenv}<2->
 {\bf Some ideas:}
-Sorting events to concentrate high-$p_T$ in fewer disk pages, approximate indexing with zonemaps and bitmaps.
+Approximate indexing with zonemaps and bitmaps, sorting events to concentrate high-$p_T$ in fewer disk pages\ldots
 \end{uncoverenv}
 
-\vspace{0.35 cm}
+\vspace{0.5 cm}
 \begin{uncoverenv}<3->
 \begin{minipage}{\linewidth}
-{\bf Discovered prior art in the literature:}
+{\bf Tanu found prior art in the literature:}
 
 \scriptsize
-Toni Mattis, Johannes Henning, Patrick Rein, Robert Hirschfeld, and Malte Appeltauer. 2015. {\it Columnar objects: improving the performance of analytical applications.} DOI: \href{http://dx.doi.org/10.1145/2814228.2814230}{\textcolor{blue}{http://dx.doi.org/10.1145/2814228.2814230}}
+Toni Mattis, Johannes Henning, Patrick Rein, Robert Hirschfeld, and Malte Appeltauer. 2015. {\it Columnar objects: improving the performance of analytical applications.} \\ DOI: \href{http://dx.doi.org/10.1145/2814228.2814230}{\textcolor{blue}{http://dx.doi.org/10.1145/2814228.2814230}}
 \end{minipage}
 
 \vspace{0.1 cm}
-But--- no code transformation or database-style indexing.
+(But it doesn't do code transformation or database-style indexing.)
 \end{uncoverenv}
 
-\vspace{0.35 cm}
+\vspace{0.2 cm}
 \begin{uncoverenv}<4->
-We're also writing a \href{https://docs.google.com/document/d/1-ZrnsS3IZdH91_pb99OLGd4gxaMm3m3Vr7XBigpx8DE/edit?usp=sharing}{\textcolor{blue}{community whitepaper}} on this.
+We're also writing a \href{https://docs.google.com/document/d/1-ZrnsS3IZdH91_pb99OLGd4gxaMm3m3Vr7XBigpx8DE/edit?usp=sharing}{\textcolor{blue}{community whitepaper}} on these topics.
 \end{uncoverenv}
 \end{frame}
 
 \begin{frame}{Goals for columnar computing}
 \vspace{0.2 cm}
-\begin{block}{Short term ($\sim$few months)}
-Develop a suite of tools for physicists to run Python functions on their local, skimmed data faster than conventional C++ methods ({\tt\small SetBranchAddress/GetEntry}).
+\begin{block}{Short term ($\sim$few weeks)}
+Finish the ``PLUR'' tools for physicists to run Python functions on their local, skimmed data faster than conventional C++ methods ({\tt\small SetBranchAddress/GetEntry}).
 \begin{itemize}
-\item ROOT with Brian's BulkIO through my Numpy interface.
-\item Numpy arrays in SSD cache with database-style indexes.
-\item \href{https://github.com/diana-hep/plur}{\textcolor{blue}{Transform Python code with PLUR}}, compile with Numba.
-\item BulkIO/PLUR-friendly data tiers like CMS's NanoAOD.
+\item Read ROOT with Brian's BulkIO through my \mbox{Numpy interface.\hspace{-1 cm}}
+\item New arrays, and someday database index arrays, in SSD cache.
+\item Transform Python code with PLUR, compile with Numba.
+\item Use BulkIO/PLUR-friendly data tiers like CMS's NanoAOD.
 \end{itemize}
 \end{block}
 
@@ -233,7 +260,7 @@ Develop a suite of tools for physicists to run Python functions on their local, 
 \begin{block}{Long term ($\sim$1 year)}
 Demonstrator of a HEP query service: physicists submit Python code to a server, it runs on many nodes in parallel and returns small objects (histograms). Should be $\mathcal{O}({\mbox{1 second}})$ to be a reasonable competitor to local skims.
 \begin{itemize}
-\item working with Oli and Igor, incorporating ideas from Thanat's summer study, still looking for ways to minimize new code\ldots
+\item working with Oli and Igor, incorporating ideas from Thanat's summer study, still hoping to work with off-the-shelf pieces\ldots
 \end{itemize}
 \end{block}
 \end{uncoverenv}
@@ -243,7 +270,7 @@ Demonstrator of a HEP query service: physicists submit Python code to a server, 
 \vspace{0.5 cm}
 \textcolor{darkblue}{ROOT: Numpy interface on top of BulkIO}
 \begin{itemize}
-\item Gets data into Scientific Python libraries (Pandas, machine learning) more rapidly, not just PLUR.
+\item Gets data into Scientific Python libraries (Pandas, machine learning) more rapidly, not only PLUR.
 \item Full integration with PyROOT (done).
 \item High-level connectors to common Python libraries (planned).
 \end{itemize}
@@ -253,15 +280,15 @@ Demonstrator of a HEP query service: physicists submit Python code to a server, 
 \textcolor{darkblue}{CMS: Testing CMS NanoAOD}
 \begin{itemize}
 \item To ensure it's BulkIO-capable and PLUR-capable.
-\item As a realistic case for BulkIO performance, compression (LZ4) performance, and experimental features like Brian's offset removal.
-\item It would be great if there was a similar movement in ATLAS; the DxAODs are all {\tt\small std::vectors} (destructively serialized, yet with the same semantic information as {\tt\small TLeaf[N]}).
+\item Performance-testing NanoAOD with BulkIO, \mbox{compression (LZ4),\hspace{-1 cm}} \\ and other experimental features like Brian's offset removal. Useful feedback to both NanoAOD group and ROOT I/O.
+\item It would be great if there was a similar movement in ATLAS; the DxAODs are all {\tt\small std::vectors} (destructively serialized, yet with the same semantic information as a {\tt\small TLeaf[N]}).
 \end{itemize}
 \end{uncoverenv}
 \end{frame}
 
 \begin{frame}{Alternative ROOT reader}
 \vspace{0.5 cm}
-The BulkIO-Numpy interface is simple enough (no streamers or classes) that it can be performed in pure Python, with no ROOT dependency.
+The BulkIO-Numpy API is simple enough (no streamers or classes) that it can be implemented in pure Python, without ROOT as a dependency.
 
 \begin{center}
 \href{https://github.com/scikit-hep/uproot}{\textcolor{blue}{https://github.com/scikit-hep/uproot}}
@@ -271,24 +298,24 @@ The BulkIO-Numpy interface is simple enough (no streamers or classes) that it ca
 
 \begin{minipage}{\linewidth}
 \small
-\begin{itemize}
+\begin{enumerate}
 \item View whole ROOT file as a memory-mapped array for rapid seeking.
-\item Find bytes corresponding to basket data and cast as arrays.
-\item Similar performance to BulkIO, but much easier to install.
-\item Small scope: just reading simple leaves, mirroring ROOT-Numpy.
-\end{itemize}
+\item Find bytes corresponding to basket data and cast as Numpy arrays.
+\item Similar performance as BulkIO (same technique), but \mbox{easier to install.\hspace{-1 cm}}
+\item Small scope: just reading simple leaves, mirroring \mbox{ROOT-Numpy API.\hspace{-1 cm}}
+\end{enumerate}
 \end{minipage}
 \end{frame}
 
 \begin{frame}{Conclusions}
 \vspace{0.5 cm}
-I'm working on many different projects, with many different people, but these projects are all connected: we're developing high-level analysis tools with a performance {\it gain}, not a cost.
+I'm working on many different projects, with many different people, but these projects are all connected: we're developing a high-level analysis environment with a performance {\it gain}, not a cost.
 
 \vspace{0.5 cm}
 \uncover<2->{Staged approach: first developing tools for analysts to use on their existing skims, then providing the same interface in a distributed service, then vectorization/type-checking gains from Femtocode.}
 
 \vspace{0.5 cm}
-\uncover<3->{Combination of uproot (for BulkIO-Numpy style interface), PLUR, and Histogrammar should be physicist-ready in weeks. Then respond to feedback and iterate.}
+\uncover<3->{Combination of uproot (for BulkIO-Numpy style interface), PLUR, and Histogrammar should be physicist-ready in weeks, maybe a month. Then I'll respond to feedback and iterate.}
 \end{frame}
 
 \end{document}
