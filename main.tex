@@ -196,12 +196,12 @@ can be turned into a nested list of lumi blocks that partition events
 [Lumi([Event, Event, Event]), Lumi([Event, Event, Event, Event])]
 \end{verbatim}}
 
-by adding arrays for lumi block list structure and per-lumi block attributes, and {\it reinterpreting} the original, unmodified event data.
+{\it without touching the Event columns!} \textcolor{gray}{(Only adding Lumi columns, including an offset array to {\it conceptually} restructure the events.)}
 \end{uncoverenv}
 
 \vspace{0.5 cm}
 \begin{uncoverenv}<3->
-\fbox{\begin{minipage}{\linewidth}Users can correct jet energies, add reconstructed candidates, link gen and reco, filter particles or events, etc., all without modifying or copying--- so that dataset versions can share content like git.a \end{minipage}}
+\fbox{\begin{minipage}{\linewidth}Users can correct jet energies, add reconstructed candidates, link gen and reco, skim particles, events, etc., all without modifying or copying--- so that dataset versions can share content like git. \end{minipage}}
 \end{uncoverenv}
 \end{frame}
 
